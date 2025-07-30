@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from 'react';
+import { supabase } from '../../supabaseClient'; // Adjust path if needed
 
 const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
-  const { login } = useAuth();
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -28,51 +25,46 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
     setMessage('');
     setIsError(false);
 
-    const url =
-      formData.type === 'register'
-        ? '/api/auth/register'
-        : '/api/auth/login';
-
-    const payload = {
-      email: formData.email,
-      password: formData.password,
-    };
-
-    if (formData.type === 'register') {
-      payload.role = formData.role;
-    }
+    const { email, password, type, role } = formData;
 
     try {
-      const res = await axios.post(url, payload);
+      if (type === 'register') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { role }, // Save role in user_metadata
+          },
+        });
 
-      if (formData.type === 'login') {
-        login(res.data.token);
-        setMessage('Login successful!');
-        setIsError(false);
-        showTemporaryPopup();
-        if (onSuccess) setTimeout(onSuccess, 500); // delay close
-      } else {
-        setMessage(`Registration successful! Please login now as a ${formData.role}.`);
+        if (error) throw error;
+        setMessage(`Registration successful! Please check your email.`);
         setIsError(false);
         showTemporaryPopup();
         setFormData({ email: '', password: '', type: 'login', role: 'student' });
-        if (onSuccess) setTimeout(onSuccess, 1800); // delay close
+        if (onSuccess) setTimeout(onSuccess, 1800);
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        setMessage('Login successful!');
+        setIsError(false);
+        showTemporaryPopup();
+        if (onSuccess) setTimeout(onSuccess, 500);
       }
     } catch (err) {
-      console.error('Auth error:', err.response?.data?.message || err.message);
       setIsError(true);
-      setMessage(
-        err.response?.data?.message || `Failed to ${formData.type}. Please try again.`
-      );
+      setMessage(err.message || `Failed to ${formData.type}. Please try again.`);
       showTemporaryPopup();
     }
   };
 
   const showTemporaryPopup = () => {
     setShowPopup(true);
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 1800);
+    setTimeout(() => setShowPopup(false), 1800);
   };
 
   const isRegister = formData.type === 'register';
@@ -151,6 +143,7 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   );
 };
 
+// (same styles as before)
 const styles = {
   section: {
     padding: '0',
