@@ -47,9 +47,9 @@ const Navbar = () => {
           </li>
 
           <li><Link style={styles.link} to="/membership">Membership</Link></li>
-          <li><Link style={styles.link} to="#">Events</Link></li>
-          <li><Link style={styles.link} to="#">About Us</Link></li>
-          <li><Link style={styles.link} to="#">Contact Us</Link></li>
+          <li><Link style={styles.link} to="/events">Events</Link></li>
+          <li><Link style={styles.link} to="/about">About Us</Link></li>
+          <li><Link style={styles.link} to="/contact">Contact Us</Link></li>
 
           {/* Alumni Corner Dropdown */}
           <li

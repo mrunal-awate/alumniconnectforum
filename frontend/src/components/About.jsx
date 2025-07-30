@@ -1,24 +1,91 @@
+// import React from 'react';
+// import { motion } from 'framer-motion';
+
+// const About = () => {
+//   return (
+//     <section className="min-h-screen bg-gradient-to-br from-blue-100 to-white py-12 px-4" id="about">
+//       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden">
+
+//         <div className="flex flex-col md:flex-row items-center justify-center p-6 md:p-10 gap-10">
+
+//           {/* Left: Logo / Image */}
+//           <motion.div
+//             className="w-full md:w-1/2"
+//             initial={{ opacity: 0, x: -50 }}
+//             whileInView={{ opacity: 1, x: 0 }}
+//             transition={{ duration: 0.6 }}
+//           >
+//             <img
+//               src="/images/sinhgad_logo.jfif"
+//               alt="Sinhgad Institutes Logo"
+//               className="w-full h-auto rounded-xl shadow-md object-contain"
+//             />
+//           </motion.div>
+
+//           {/* Right: About Content */}
+//           <motion.div
+//             className="w-full md:w-1/2 text-left"
+//             initial={{ opacity: 0, x: 50 }}
+//             whileInView={{ opacity: 1, x: 0 }}
+//             transition={{ duration: 0.6 }}
+//           >
+//             <h3 className="text-gray-700 font-semibold text-lg mb-2 uppercase">About</h3>
+//             <h2 className="text-3xl md:text-4xl font-extrabold text-blue-800 mb-4">Alumni Association of SITS</h2>
+
+//             <p className="text-gray-700 mb-4">
+//               The Alumni Association of SITS strives to foster and strengthen the relationship between the Institute, its faculty, alumni, industries, and well-wishers.
+//               Our goal is to encourage collaboration, support innovation, and continue advancing the institute's mission.
+//             </p>
+
+//             <p className="text-gray-700 mb-4">
+//               The association plays a key role in providing opportunities for alumni to give back to the institute through mentorship, scholarships, events, and networking.
+//               It contributes to building a world-class ecosystem for education, research, and entrepreneurship.
+//             </p>
+
+//             <p className="text-gray-700">
+//               Throughout the year, the Alumni Association of SITS organizes outreach programs and events that ensure lasting connections and promote excellence in every endeavor.
+//             </p>
+//           </motion.div>
+
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default About;
+
+
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 
 const About = () => {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-blue-100 to-white py-12 px-4" id="about">
-      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden">
+    <section className="flex flex-col min-h-screen bg-gradient-to-br from-blue-100 to-white py-12 px-4" id="about">
+      <Helmet>
+        <title>SITS Alumni</title>
+        <meta
+          name="description"
+          content="Learn about the mission, vision, and goals of the Alumni Association of Sinhgad Institute of Technology and Science."
+        />
+      </Helmet>
 
+      {/* Main About Section */}
+      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden">
         <div className="flex flex-col md:flex-row items-center justify-center p-6 md:p-10 gap-10">
 
           {/* Left: Logo / Image */}
           <motion.div
             className="w-full md:w-1/2"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7 }}
           >
             <img
               src="/images/sinhgad_logo.jfif"
               alt="Sinhgad Institutes Logo"
-              className="w-full h-auto rounded-xl shadow-md object-contain"
+              className="w-full h-auto rounded-xl shadow-md object-contain hover:scale-105 transition duration-300 ease-in-out"
             />
           </motion.div>
 
@@ -46,16 +113,55 @@ const About = () => {
               Throughout the year, the Alumni Association of SITS organizes outreach programs and events that ensure lasting connections and promote excellence in every endeavor.
             </p>
           </motion.div>
-
         </div>
+      </div>
+
+      {/* Mission, Vision, Objectives */}
+      <div className="max-w-6xl mx-auto mt-16 grid md:grid-cols-3 gap-8 px-4">
+        <motion.div
+          className="bg-white p-6 rounded-2xl shadow-md border-l-4 border-blue-600"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h3 className="text-xl font-bold text-blue-800 mb-2">Mission</h3>
+          <p className="text-gray-700">
+            To create a strong network of alumni, empowering mutual growth and lifelong engagement with the institution.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="bg-white p-6 rounded-2xl shadow-md border-l-4 border-green-600"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h3 className="text-xl font-bold text-green-800 mb-2">Vision</h3>
+          <p className="text-gray-700">
+            To become a globally connected and collaborative alumni network that supports innovation, excellence, and community impact.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="bg-white p-6 rounded-2xl shadow-md border-l-4 border-purple-600"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <h3 className="text-xl font-bold text-purple-800 mb-2">Objectives</h3>
+          <ul className="list-disc ml-5 text-gray-700 space-y-1">
+            <li>Strengthen alumni-institute relationships</li>
+            <li>Support student development and mentoring</li>
+            <li>Promote networking and collaboration</li>
+            <li>Encourage alumni contributions and involvement</li>
+          </ul>
+        </motion.div>
       </div>
     </section>
   );
 };
 
 export default About;
-
-
 
 
 
