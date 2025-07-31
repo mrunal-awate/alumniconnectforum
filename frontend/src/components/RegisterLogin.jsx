@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient'; // Adjust path if needed
-import { showTemporaryPopup } from '../utils/popup'; // adjust the path
-
-// import api from '../api';
-
+import { supabase } from '../supabaseClient';
+import { showTemporaryPopup } from '../utils/popup'; // ✅ Corrected import
 
 const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   const [formData, setFormData] = useState({
@@ -25,72 +22,69 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setMessage('');
-  setIsError(false);
+    e.preventDefault();
+    setMessage('');
+    setIsError(false);
 
-  const { email, password, type, role } = formData;
+    const { email, password, type, role } = formData;
 
-  try {
-    if (type === 'register') {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { role }, // store role in user_metadata
-        },
-      });
-
-      if (signUpError) throw signUpError;
-
-      // ✅ Insert into alumni table
-      const userId = signUpData.user?.id;
-
-      const { error: insertError } = await supabase.from('alumni').insert([
-        {
-          user_id: userId, // assumes your alumni table has this field
+    try {
+      if (type === 'register') {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
-          role,
-          approved: false, // default unapproved
-          fullName: '',    // can be updated later
-        },
-      ]);
+          password,
+          options: {
+            data: { role },
+          },
+        });
 
-      if (insertError) {
-        console.error('Insert alumni error:', insertError);
-        setMessage('Registered, but saving profile failed.');
-        setIsError(true);
-        showTemporaryPopup();
-        return;
+        if (signUpError) throw signUpError;
+
+        const userId = signUpData.user?.id;
+
+        const { error: insertError } = await supabase.from('alumni').insert([
+          {
+            user_id: userId,
+            email,
+            role,
+            approved: false,
+            fullName: '',
+          },
+        ]);
+
+        if (insertError) {
+          console.error('Insert alumni error:', insertError);
+          setMessage('Registered, but saving profile failed.');
+          setIsError(true);
+          showTemporaryPopup(setShowPopup);
+          return;
+        }
+
+        setMessage(`🎉 Registration successful! Check your email to confirm.`);
+        setFormData({ email: '', password: '', type: 'login', role: 'student' });
+        setIsError(false);
+        showTemporaryPopup(setShowPopup);
+        if (onSuccess) setTimeout(onSuccess, 1800);
+      } else {
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (loginError) throw loginError;
+
+        setMessage('✅ Login successful!');
+        setIsError(false);
+        showTemporaryPopup(setShowPopup);
+        if (onSuccess) setTimeout(onSuccess, 500);
       }
-
-      setMessage(`🎉 Registration successful! Check your email to confirm.`);
-      setFormData({ email: '', password: '', type: 'login', role: 'student' });
-      setIsError(false);
+    } catch (err) {
+      console.error(err.message);
+      setIsError(true);
+      setMessage(err.message || `Failed to ${formData.type}.`);
       showTemporaryPopup(setShowPopup);
-      if (onSuccess) setTimeout(onSuccess, 1800);
-    } else {
-      // ✅ LOGIN
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (loginError) throw loginError;
-
-      setMessage('✅ Login successful!');
-      setIsError(false);
-      showTemporaryPopup(setShowPopup);
-      if (onSuccess) setTimeout(onSuccess, 500);
     }
-  } catch (err) {
-    console.error(err.message);
-    setIsError(true);
-    setMessage(err.message || `Failed to ${formData.type}.`);
-    showTemporaryPopup();
-  }
-};
-
+  };
 
   const isRegister = formData.type === 'register';
 
@@ -168,7 +162,6 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   );
 };
 
-// (same styles as before)
 const styles = {
   section: {
     padding: '0',
