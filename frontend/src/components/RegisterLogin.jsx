@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient'; // Adjust path if needed
-import { showTemporaryPopup } from './utils/popup'; // adjust the path
+import { showTemporaryPopup } from '..popup/utils/popup'; // adjust the path
 
 // import api from '../api';
 
