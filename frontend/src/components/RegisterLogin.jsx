@@ -67,7 +67,7 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
       setMessage(`🎉 Registration successful! Check your email to confirm.`);
       setFormData({ email: '', password: '', type: 'login', role: 'student' });
       setIsError(false);
-      showTemporaryPopup();
+      showTemporaryPopup(setShowPopup);
       if (onSuccess) setTimeout(onSuccess, 1800);
     } else {
       // ✅ LOGIN
@@ -80,7 +80,7 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
 
       setMessage('✅ Login successful!');
       setIsError(false);
-      showTemporaryPopup();
+      showTemporaryPopup(setShowPopup);
       if (onSuccess) setTimeout(onSuccess, 500);
     }
   } catch (err) {
