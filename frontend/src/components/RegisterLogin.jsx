@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient'; // Adjust path if needed
+import { showTemporaryPopup } from './utils/popup'; // adjust the path
+
 // import api from '../api';
 
 
@@ -23,51 +25,72 @@ const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    setIsError(false);
+  e.preventDefault();
+  setMessage('');
+  setIsError(false);
 
-    const { email, password, type, role } = formData;
+  const { email, password, type, role } = formData;
 
-    try {
-      if (type === 'register') {
-        const { error } = await supabase.auth.signUp({
+  try {
+    if (type === 'register') {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { role }, // store role in user_metadata
+        },
+      });
+
+      if (signUpError) throw signUpError;
+
+      // ✅ Insert into alumni table
+      const userId = signUpData.user?.id;
+
+      const { error: insertError } = await supabase.from('alumni').insert([
+        {
+          user_id: userId, // assumes your alumni table has this field
           email,
-          password,
-          options: {
-            data: { role }, // Save role in user_metadata
-          },
-        });
+          role,
+          approved: false, // default unapproved
+          fullName: '',    // can be updated later
+        },
+      ]);
 
-        if (error) throw error;
-        setMessage(`Registration successful! Please check your email.`);
-        setIsError(false);
+      if (insertError) {
+        console.error('Insert alumni error:', insertError);
+        setMessage('Registered, but saving profile failed.');
+        setIsError(true);
         showTemporaryPopup();
-        setFormData({ email: '', password: '', type: 'login', role: 'student' });
-        if (onSuccess) setTimeout(onSuccess, 1800);
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-        setMessage('Login successful!');
-        setIsError(false);
-        showTemporaryPopup();
-        if (onSuccess) setTimeout(onSuccess, 500);
+        return;
       }
-    } catch (err) {
-      setIsError(true);
-      setMessage(err.message || `Failed to ${formData.type}. Please try again.`);
-      showTemporaryPopup();
-    }
-  };
 
-  const showTemporaryPopup = () => {
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 1800);
-  };
+      setMessage(`🎉 Registration successful! Check your email to confirm.`);
+      setFormData({ email: '', password: '', type: 'login', role: 'student' });
+      setIsError(false);
+      showTemporaryPopup();
+      if (onSuccess) setTimeout(onSuccess, 1800);
+    } else {
+      // ✅ LOGIN
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (loginError) throw loginError;
+
+      setMessage('✅ Login successful!');
+      setIsError(false);
+      showTemporaryPopup();
+      if (onSuccess) setTimeout(onSuccess, 500);
+    }
+  } catch (err) {
+    console.error(err.message);
+    setIsError(true);
+    setMessage(err.message || `Failed to ${formData.type}.`);
+    showTemporaryPopup();
+  }
+};
+
 
   const isRegister = formData.type === 'register';
 
