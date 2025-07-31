@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api';
+import { supabase } from '../supabaseClient'; // ✅ import Supabase client
 
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
@@ -17,15 +17,21 @@ const Home = () => {
   useEffect(() => {
     const fetchAlumni = async () => {
       try {
-        const res = await api.get('/alumni');
-        console.log("Fetched alumni data:", res.data); // ✅ Debug log
-        setAlumniList(res.data); // Already filtered from backend
+        const { data, error } = await supabase
+          .from('alumni') // ✅ table name in Supabase
+          .select('*')
+          .eq('approved', true); // ✅ optional filter for approved alumni
+
+        if (error) throw error;
+
+        console.log("Fetched alumni data:", data); // Debug
+        setAlumniList(data);
       } catch (err) {
-        console.error('Failed to fetch alumni:', err);
+        console.error('Failed to fetch alumni:', err.message);
       }
     };
 
-    fetchAlumni(); // ✅ Always fetch to show blur or real data
+    fetchAlumni();
   }, []);
 
   return (

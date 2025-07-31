@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlumniCard from './AlumniCard';
-import api from '../api'; // axios instance
+import { supabase } from '../supabaseClient'; // ✅ Supabase
 
 const MemberSection = () => {
   const [alumniList, setAlumniList] = useState([]);
@@ -18,16 +18,20 @@ const MemberSection = () => {
   useEffect(() => {
     const fetchAlumni = async () => {
       try {
-        const res = await api.get('/alumni');
-        const allAlumni = res.data;
+        const { data, error } = await supabase
+          .from('alumni')
+          .select('*')
+          .eq('approved', true); // ✅ Optional filter
 
-        setAlumniList(allAlumni);
-        setFilteredList(allAlumni);
+        if (error) throw error;
 
-        const batches = [...new Set(allAlumni.map(a => a.batch))].filter(Boolean).sort();
+        setAlumniList(data);
+        setFilteredList(data);
+
+        const batches = [...new Set(data.map(a => a.batch))].filter(Boolean).sort();
         setBatchOptions(batches);
       } catch (err) {
-        console.error('Error fetching alumni:', err);
+        console.error('Error fetching alumni:', err.message);
         setError('Failed to load alumni. Please try again later.');
       } finally {
         setLoading(false);
@@ -133,7 +137,7 @@ const MemberSection = () => {
         filteredList.length > 0 ? (
           <div style={styles.grid}>
             {filteredList.map((alumni, index) => (
-              <AlumniCard key={index} alumni={alumni} onView={() => handleViewProfile(alumni._id)} />
+              <AlumniCard key={index} alumni={alumni} onView={() => handleViewProfile(alumni.id)} />
             ))}
           </div>
         ) : (
