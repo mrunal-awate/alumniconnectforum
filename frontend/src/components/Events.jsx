@@ -213,8 +213,7 @@ const Events = () => {
           We encourage alumni and students to organize or suggest new events for the community.
         </p>
         <a
-          href="#" // Placeholder for an actual event suggestion/hosting form link
-          className="inline-flex items-center bg-white text-indigo-700 font-bold py-3 px-8 rounded-full shadow-md hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+          href="#" className="inline-flex items-center bg-white text-indigo-700 font-bold py-3 px-8 rounded-full shadow-md hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
         >
           <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd"></path></svg>
           Suggest / Host an Event
