@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { supabase } from '../../supabaseClient'; // Adjust path if needed
+import { supabase } from '../supabaseClient'; // Adjust path if needed
+// import api from '../api';
+
 
 const RegisterLogin = ({ onSuccess, defaultRole = 'student' }) => {
   const [formData, setFormData] = useState({

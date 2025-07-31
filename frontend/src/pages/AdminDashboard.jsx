@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api'; // your axios instance
+import { supabase } from '../supabaseClient'; // import Supabase client
 
 const AdminDashboard = () => {
   const [pendingAlumni, setPendingAlumni] = useState([]);
@@ -11,24 +11,33 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchPendingAlumni = async () => {
-    try {
-      const res = await api.get('/alumni/pending');
-      setPendingAlumni(res.data);
-    } catch (err) {
-      console.error('Error fetching pending alumni:', err);
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('alumni')
+      .select('*')
+      .eq('isVerified', false);
+
+    if (error) {
+      console.error('Error fetching pending alumni:', error.message);
+    } else {
+      setPendingAlumni(data);
     }
+
+    setLoading(false);
   };
 
   const handleVerify = async (id) => {
-    try {
-      await api.put(`/alumni/verify/${id}`);
-      setMessage('✅ Alumni verified successfully!');
-      setPendingAlumni(prev => prev.filter(alumni => alumni._id !== id));
-    } catch (err) {
-      console.error('Verification failed:', err);
+    const { error } = await supabase
+      .from('alumni')
+      .update({ isVerified: true })
+      .eq('id', id); // or .eq('_id', id) if you're using Mongo-style IDs
+
+    if (error) {
+      console.error('Verification failed:', error.message);
       setMessage('❌ Failed to verify alumni.');
+    } else {
+      setMessage('✅ Alumni verified successfully!');
+      setPendingAlumni(prev => prev.filter(alumni => alumni.id !== id));
     }
 
     setTimeout(() => setMessage(''), 3000);
@@ -45,11 +54,11 @@ const AdminDashboard = () => {
       ) : (
         <div style={styles.grid}>
           {pendingAlumni.map((alumni) => (
-            <div key={alumni._id} style={styles.card}>
+            <div key={alumni.id} style={styles.card}>
               <h3 style={styles.name}>{alumni.fullName || 'Unnamed Alumni'}</h3>
               <p><strong>Email:</strong> {alumni.email}</p>
               <p><strong>Role:</strong> {alumni.role}</p>
-              <button onClick={() => handleVerify(alumni._id)} style={styles.button}>
+              <button onClick={() => handleVerify(alumni.id)} style={styles.button}>
                 ✅ Approve
               </button>
             </div>

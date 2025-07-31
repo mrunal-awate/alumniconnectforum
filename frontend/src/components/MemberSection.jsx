@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlumniCard from './AlumniCard';
 import { supabase } from '../supabaseClient'; // ✅ Supabase
+// import api from '../api';
+
 
 const MemberSection = () => {
   const [alumniList, setAlumniList] = useState([]);
