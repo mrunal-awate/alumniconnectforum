@@ -4,7 +4,8 @@
 // };
 
 
-export const showTemporaryPopup = (setState, duration = 1800) => {
-  setState(true);
-  setTimeout(() => setState(false), duration);
+export const showTemporaryPopup = (setShowPopup, duration = 1800) => {
+  setShowPopup(true);
+  setTimeout(() => setShowPopup(false), duration);
 };
+
