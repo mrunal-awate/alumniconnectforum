@@ -64,11 +64,39 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, type = 'login', role = 'student') => {
+  if (type === 'register') {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { role },
+      },
+    });
+    if (signUpError) throw signUpError;
+
+    const userId = signUpData.user?.id;
+
+    const { error: insertError } = await supabase.from('alumni').insert([
+      {
+        user_id: userId,
+        email,
+        role,
+        approved: false,
+        fullName: '',
+      },
+    ]);
+
+    if (insertError) throw insertError;
+
+    return signUpData;
+  } else {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
-  };
+  }
+};
+
 
   const logout = async () => {
     await supabase.auth.signOut();
