@@ -245,7 +245,7 @@
 
 import React, { useState } from 'react';
 import { showTemporaryPopup } from '../utils/popup';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterLogin = ({ defaultRole = 'student' }) => {
